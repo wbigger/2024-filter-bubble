@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Bubble Game</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .score {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .post {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .topic {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .like-btn:hover {
+            background: #f0f0f0;
+            color: #ff4444;
+        }
+        .game-over {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+        .reset-btn {
+            background: #4444ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background: #3333dd;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>La Bolla dei Social Media</h1>
+        <div class="score">Round: <span id="round">1</span>/3 | Score: <span id="score">0</span></div>
+    </div>
+    <div id="posts"></div>
+
+    <script>
+        let posts = [
+            { id: 1, topic: 'tech', content: 'Nuova AI rivoluzionaria!', likes: 0, visible: true },
+            { id: 2, topic: 'sport', content: 'Vittoria incredibile!', likes: 0, visible: true },
+            { id: 3, topic: 'food', content: 'Ricetta tradizionale', likes: 0, visible: true },
+            { id: 4, topic: 'tech', content: 'Update smartphone', likes: 0, visible: true },
+            { id: 5, topic: 'sport', content: 'Finale di campionato', likes: 0, visible: true },
+            { id: 6, topic: 'food', content: 'Chef stellato', likes: 0, visible: true }
+        ];
+        let score = 0;
+        let round = 1;
+
+        function renderPosts() {
+            const postsContainer = document.getElementById('posts');
+            postsContainer.innerHTML = '';
+
+            if (round > 3) {
+                postsContainer.innerHTML = `
+                    <div class="game-over">
+                        <h2>Game Over!</h2>
+                        <p>Hai creato una filter bubble! I contenuti che vedi sono limitati ai tuoi interessi precedenti.</p>
+                        <button class="reset-btn" onclick="resetGame()">Gioca di Nuovo</button>
+                    </div>
+                `;
+                return;
+            }
+
+            posts.filter(post => post.visible).forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <div>
+                        <div>${post.content}</div>
+                        <div class="topic">#${post.topic}</div>
+                    </div>
+                    <div>
+                        <span>${post.likes}</span>
+                        <button class="like-btn" onclick="handleLike(${post.id})">♥</button>
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        }
+
+        function handleLike(postId) {
+            const likedPost = posts.find(p => p.id === postId);
+            likedPost.likes++;
+            
+            const dominantTopic = likedPost.topic;
+            posts = posts.map(post => ({
+                ...post,
+                visible: post.topic === dominantTopic || post.likes > 0
+            }));
+
+            score++;
+            round++;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('round').textContent = round;
+            
+            renderPosts();
+        }
+
+        function resetGame() {
+            posts = posts.map(post => ({ ...post, likes: 0, visible: true }));
+            score = 0;
+            round = 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('round').textContent = round;
+            renderPosts();
+        }
+
+        renderPosts();
+    </script>
+</body>
+</html>

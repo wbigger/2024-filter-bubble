@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-template-rows: repeat(5, 80px);
+      gap: 4px;
+      padding: 20px;
+    }
+    
+    .cell {
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+
+  <script>
+    const grid = document.querySelector('.grid');
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', 
+                    '#D4A5A5', '#9B59B6', '#3498DB', '#FFD93D', '#6C5B7B',
+                    '#F8B195', '#355C7D', '#99B898', '#F67280', '#C06C84',
+                    '#6C5B7B', '#C8C8A9', '#83AF9B', '#FC9D9A', '#E9D985',
+                    '#BCE784', '#348AA7', '#525174', '#513B56', '#5DD39E'];
+
+    // Crea la griglia
+    colors.forEach((color, index) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.backgroundColor = color;
+      cell.dataset.index = index;
+      grid.appendChild(cell);
+    });
+
+    // Gestisce il click
+    grid.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('cell')) return;
+      
+      const index = parseInt(e.target.dataset.index);
+      const color = e.target.style.backgroundColor;
+      const gridSize = 5;
+      
+      // Calcola gli indici delle celle adiacenti
+      const adjacent = [
+        index - gridSize, // sopra
+        index + gridSize, // sotto
+        index % gridSize !== 0 ? index - 1 : -1, // sinistra
+        index % gridSize !== gridSize - 1 ? index + 1 : -1 // destra
+      ];
+      
+      // Colora le celle adiacenti
+      adjacent.forEach(adjIndex => {
+        if (adjIndex >= 0 && adjIndex < colors.length) {
+          const adjCell = grid.children[adjIndex];
+          if (adjCell) adjCell.style.backgroundColor = color;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
